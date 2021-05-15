@@ -17,7 +17,7 @@ bool safety(int n, int m, int Available[], int Allocation[100][100], int Need[10
 		Work[i] = Available[i];
 
 
-	int i = 0,index=0;
+	int i = 0, index = 0;
 	while (i<n){
 		//finding false element
 		if (Finish[i] == false){
@@ -59,12 +59,13 @@ bool safety(int n, int m, int Available[], int Allocation[100][100], int Need[10
 }
 
 int main(){
-	int n, m;
+	L1:int n, m, process_no;
 	int * Available;
 	int Max[100][100];
 	int Allocation[100][100];
 	int Need[100][100];
-	string op;
+	int Request[100];
+	string op, PID,request;
 	bool safe;
 	cout << "Enter n & m values separated by space: ";
 	cin >> n >> m;
@@ -94,7 +95,7 @@ int main(){
 	}
 
 	while (1){
-		cout << "Press s for safe state enquiry i for immediate request enquiry ,and q for quit:  ";
+		cout << "Press s for safe state enquiry i for immediate request enquiry ,N for new operation ,and q for quit:  ";
 		cin >> op;
 
 
@@ -103,13 +104,84 @@ int main(){
 			if (safe == true){
 				cout << "Yes, Safe state " + safe_processes << endl;
 			}
-			else cout << "No";
+			else cout << "No, State is not safe" << endl;
 		}
 
-		if (op == "i"){
-		}
+		else if (op == "i"){
+			cout << "		Enter PID [ex. P0]: ";
+			cin >> PID;
+			size_t last_index = PID.find_last_not_of("0123456789");
+			string result = PID.substr(last_index + 1);
+			process_no = stoi(result);
+			cout << "		Enter request [ex. (1,2,3)]: ";
+			cin >> request;
+			int ptr1 = 0, ptr2 = 0,i=0,count=0;
+			while(1){
+				if (request[count] == '('){
 
-		if (op == "q") break;
+					count++;
+				}
+				else if (request[count] == ')'){
+					Request[i] = stoi(request.substr(ptr1 + 1, ptr2));
+					i++;
+					break;
+				}
+				else{//, aw rakm
+
+					if (request[count] == ','){
+						Request[i] = stoi(request.substr(ptr1 + 1, ptr2));
+						i++;
+						ptr2 = count;
+						ptr1 = ptr2;
+					}
+					else{
+						ptr2 = count;
+					}
+
+					count++;
+				}
+			}
+			int no_grant = 0;
+			for (int i = 0; i < m; i++)
+			{
+				if (Request[i] > Need[process_no][i] || Request[i] > Available[i]){
+					no_grant = 1;
+					break;
+				}
+			}
+			//decrementing and eincrementing matrices then calling the safet fn..
+			if (no_grant == 0){
+				for (int i = 0; i < m; i++)
+				{
+					Allocation[process_no][i] += Request[i];
+					Need[process_no][i] -= Request[i];
+					Available[i] -= Request[i];
+				}
+				safe = safety(n, m, Available, Allocation, Need);
+				if (safe && no_grant == 0){
+					cout << "Yes ,request can be granted with safe state , " + safe_processes << endl;
+				}
+				else
+					cout << "No ,Request couldn't be granted" << endl;
+
+				//returning things to the original state
+				for (int i = 0; i < m; i++)
+				{
+					Allocation[process_no][i] -= Request[i];
+					Need[process_no][i] += Request[i];
+					Available[i] += Request[i];
+				}
+
+			}
+			else
+				cout << "No ,Request couldn't be granted" << endl;
+		
+
+		}
+		else if (op == "N"){ 
+			cout << "\n================================================================\n";
+			goto L1; }
+		else if (op == "q") break;
 	}
 
 	system("pause");

@@ -59,24 +59,37 @@ bool safety(int n, int m, int Available[], int Allocation[100][100], int Need[10
 }
 
 int main(){
-	L1:int n, m, process_no;
+L1:int n, m, process_no;
 	int * Available;
 	int Max[100][100];
 	int Allocation[100][100];
 	int Need[100][100];
 	int Request[100];
-	string op, PID,request;
+	string op, PID, request;
 	bool safe;
 	cout << "Enter n & m values separated by space: ";
 	cin >> n >> m;
+	if (n <= 0 || m <= 0){
+		cout << "Error: Both n&m should be bigger than 0." << endl;
+		goto L1;
+	}
 	Available = new int[m];
 	cout << "Enter the Available matrix elements separated by space: ";
-	for (int i = 0; i < m; i++)
+	for (int i = 0; i < m; i++){
 		cin >> Available[i];
+		if (Available[i] < 0){
+			cout << "Error: one or more elements in the Available matrix is negative\n";
+			goto L1;
+		}
+	}
 	cout << "Enter Max matrix elements: \n";
 	for (int i = 0; i < n; i++){
 		for (int j = 0; j < m; j++){
 			cin >> Max[i][j];
+			if (Max[i][j] < 0){
+				cout << "Error: one or more elements in the Max matrix is negative\n";
+				goto L1;
+			}
 		}
 	}
 	cout << "Enter Allocation matrix elements: \n";
@@ -84,16 +97,25 @@ int main(){
 		for (int j = 0; j < m; j++){
 			cin >> Allocation[i][j];
 			Need[i][j] = Max[i][j] - Allocation[i][j];
+			if (Allocation[i][j] < 0){
+				cout << "Error: one or more elements in the Allocation matrix is negative\n";
+				goto L1;
+			}
 		}
 	}
+	int negative_flag = 0;
 	cout << "Need Matrix:\n";
 	for (int i = 0; i < n; i++){
 		for (int j = 0; j < m; j++){
 			cout << Need[i][j] << " ";
 			if (j == m - 1)cout << "\n";
+			if (Need[i][j] < 0) negative_flag = 1;
 		}
 	}
-
+	if (negative_flag == 1){
+		cout << "Error: one or more elements in the Need matrix is negative" << endl;
+		goto L1;
+	}
 	while (1){
 		cout << "Press s for safe state enquiry i for immediate request enquiry ,N for new operation ,and q for quit:  ";
 		cin >> op;
@@ -113,10 +135,14 @@ int main(){
 			size_t last_index = PID.find_last_not_of("0123456789");
 			string result = PID.substr(last_index + 1);
 			process_no = stoi(result);
+			if (process_no > n - 1){
+				cout << "Error: P" + to_string(process_no) + " doesn't exist" << endl;
+				continue;
+			}
 			cout << "		Enter request [ex. (1,2,3)]: ";
 			cin >> request;
-			int ptr1 = 0, ptr2 = 0,i=0,count=0;
-			while(1){
+			int ptr1 = 0, ptr2 = 0, i = 0, count = 0;
+			while (count != request.length()){
 				if (request[count] == '('){
 
 					count++;
@@ -175,15 +201,15 @@ int main(){
 			}
 			else
 				cout << "No ,Request couldn't be granted" << endl;
-		
+
 
 		}
-		else if (op == "N"){ 
+		else if (op == "N"){
 			cout << "\n================================================================\n";
-			goto L1; }
+			goto L1;
+		}
 		else if (op == "q") break;
 	}
 
-	system("pause");
 	return 0;
 }

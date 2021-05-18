@@ -67,14 +67,22 @@ L1:int n, m, process_no;
 	int Request[100];
 	string op, PID, request;
 	bool safe;
-	cout << "Enter n & m values separated by space: ";
+	cout << "Enter n & m values respectively separated by space: ";
 	cin >> n >> m;
 	if (n <= 0 || m <= 0){
 		cout << "Error: Both n&m should be bigger than 0." << endl;
 		goto L1;
 	}
 	Available = new int[m];
-	cout << "Enter the Available matrix elements separated by space: ";
+	cout << "Enter the Available matrix elements separated by space: "<<endl;
+	char z = 'A';
+	for (int w = 0; w < m; w++){
+		cout << z;
+		if (z == 'Z') z = 'A';
+		else z++;
+		cout << "   ";
+	}
+	cout << "\n";
 	for (int i = 0; i < m; i++){
 		cin >> Available[i];
 		if (Available[i] < 0){
@@ -82,9 +90,27 @@ L1:int n, m, process_no;
 			goto L1;
 		}
 	}
+
+
 	cout << "Enter Max matrix elements: \n";
+	if (n < 10)
+		cout << "\t";
+	else
+		cout << "       ";
+	z = 'A';
+	for (int w = 0; w < m; w++){
+		cout << z;
+		if (z == 'Z') z = 'A';
+		else z++;
+		cout << "   ";
+	}
+	cout << "\n";
 	for (int i = 0; i < n; i++){
 		for (int j = 0; j < m; j++){
+			if (j == 0){
+				if (i<10)cout << "P" + to_string(i) + "      ";
+				else cout << "P" + to_string(i) + "     ";
+			}
 			cin >> Max[i][j];
 			if (Max[i][j] < 0){
 				cout << "Error: one or more elements in the Max matrix is negative\n";
@@ -93,8 +119,24 @@ L1:int n, m, process_no;
 		}
 	}
 	cout << "Enter Allocation matrix elements: \n";
+	if (n < 10)
+		cout << "\t";
+	else
+		cout << "       ";
+	z = 'A';
+	for (int w = 0; w < m; w++){
+		cout << z;
+		if (z == 'Z') z = 'A';
+		else z++;
+		cout << "   ";
+	}
+	cout << "\n";
 	for (int i = 0; i < n; i++){
 		for (int j = 0; j < m; j++){
+			if (j == 0){
+				if (i<10)cout << "P" + to_string(i) + "      ";
+				else cout << "P" + to_string(i) + "     ";
+			}
 			cin >> Allocation[i][j];
 			Need[i][j] = Max[i][j] - Allocation[i][j];
 			if (Allocation[i][j] < 0){
@@ -105,9 +147,28 @@ L1:int n, m, process_no;
 	}
 	int negative_flag = 0;
 	cout << "Need Matrix:\n";
+	if (n < 10)
+		cout << "\t";
+	else
+		cout << "       ";
+	z = 'A';
+	for (int w = 0; w < m; w++){
+		cout << z;
+		if (z == 'Z') z = 'A';
+		else z++;
+		cout << "   ";
+	}
+	cout << "\n";
 	for (int i = 0; i < n; i++){
 		for (int j = 0; j < m; j++){
-			cout << Need[i][j] << " ";
+			if (j == 0){ 
+					if(i<10)cout << "P" + to_string(i) + "      "; 
+					else cout << "P" + to_string(i) + "     ";
+			}
+			if (Need[i][j]>=0 && Need[i][j] <10)
+				cout << Need[i][j] << "   ";
+			else
+				cout << Need[i][j] << "  ";
 			if (j == m - 1)cout << "\n";
 			if (Need[i][j] < 0) negative_flag = 1;
 		}
@@ -185,7 +246,15 @@ L1:int n, m, process_no;
 				}
 				safe = safety(n, m, Available, Allocation, Need);
 				if (safe && no_grant == 0){
-					cout << "Yes ,request can be granted with safe state , " + safe_processes << endl;
+					cout << "Yes ,request can be granted with safe state , ";
+					int l = 0;
+					while (1){
+						if (l == 0) cout << "<P" + to_string(process_no) + "req,";
+						else cout << safe_processes[l];
+						l++;
+						if (l == safe_processes.length()) break;
+					}
+					cout << "\n";
 				}
 				else
 					cout << "No ,Request couldn't be granted" << endl;
